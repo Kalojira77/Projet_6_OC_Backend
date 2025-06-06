@@ -1,6 +1,22 @@
 const express = require('express');
+const mongoose = require('mongoose');
 
 const app = express();
+
+const user = process.env.MONGODB_USER;
+const pass = process.env.MONGODB_PASS;
+const cluster = process.env.MONGODB_CLUSTER;
+const dbName = process.env.MONGODB_DB;
+
+const uri = `mongodb+srv://${user}:${pass}@${cluster}/${dbName}?retryWrites=true&w=majority`;
+
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('Connexion à MongoDB réussie !'))
+.catch((err) => console.log('Connexion à MongoDB échouée :', err));
+
 
 app.use(express.json());
 
