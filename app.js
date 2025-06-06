@@ -1,58 +1,30 @@
 require('dotenv').config();
-
 const express = require('express');
-const mongoose = require('mongoose');
-
+const path = require('path');
 const app = express();
 
-const user = process.env.MONGODB_USER;
-const pass = process.env.MONGODB_PASS;
-const cluster = process.env.MONGODB_CLUSTER;
-const dbName = process.env.MONGODB_DB;
-
-const uri = `mongodb+srv://${user}:${pass}@${cluster}/${dbName}?retryWrites=true&w=majority`;
-
-mongoose.connect(uri)
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch((err) => console.log('Connexion à MongoDB échouée :', err));
-
+require('./utils/db');
 
 app.use(express.json());
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, PATCH, OPTIONS'
+  );
   next();
 });
 
-app.post('/api/stuff', (req, res, next) => {
-    console.log(req.body);
-    res.status(201).json({
-        message: 'Objet créé !'
-    })
-    });
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
-app.get('/api/stuff', (req, res, next) => {
-  const stuff = [
-    {
-      _id: 'oeihfzeoi',
-      title: 'Mon premier objet',
-      description: 'Les infos de mon premier objet',
-      imageUrl: 'https://cdn.pixabay.com/photo/2019/06/11/18/56/camera-4267692_1280.jpg',
-      price: 4900,
-      userId: 'qsomihvqios',
-    },
-    {
-      _id: 'oeihfzeomoihi',
-      title: 'Mon deuxième objet',
-      description: 'Les infos de mon deuxième objet',
-      imageUrl: 'https://cdn.pixabay.com/photo/2019/06/11/18/56/camera-4267692_1280.jpg',
-      price: 2900,
-      userId: 'qsomihvqios',
-    },
-  ];
-  res.status(200).json(stuff);
-});
+app.use('/api/users', require('./routes/user'));
+app.use('/api/books', require('./routes/book'));
+
+// app.use('/api/auth', require('./routes/auth'));
 
 module.exports = app;
