@@ -1,12 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
 const bookController = require('../controllers/bookController');
 
-router.post('/', bookController.createBook);
+// Routes publiques (lecture uniquement)
 router.get('/', bookController.getAllBooks);
+router.get('/bestrating', bookController.getTopThree);
 router.get('/:id', bookController.getBookById);
-router.put('/:id', bookController.modifyBook);
-router.delete('/:id', bookController.deleteBook);
-router.post('/:id/rating', bookController.rateBook);
+
+// Routes protégées (nécessitent authentification)
+router.post('/', auth, bookController.createBook);
+router.put('/:id', auth, bookController.modifyBook);
+router.delete('/:id', auth, bookController.deleteBook);
+router.post('/:id/rating', auth, bookController.rateBook);
 
 module.exports = router;

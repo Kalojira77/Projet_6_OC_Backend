@@ -1,8 +1,20 @@
 const Book = require('../models/Book');
 
+// Contrôleur pour les opérations sur les livres
 exports.createBook = async (req, res) => {
+  console.log('>>> createBook – req.body:', req.body);
+    console.log('>>> createBook – req.auth:', req.auth);
   try {
-    const { userId, title, author, imageUrl, year, genre } = req.body;
+    
+    const { title, author, imageUrl, year, genre } = req.body;
+    if (!title || !author || !imageUrl || !year || !genre) {
+      return res.status(400).json({ message: 'Tous les champs titre, auteur, imageUrl, année et genre sont requis.' });
+    }
+
+    const userId = req.auth && req.auth.userId;
+    if (!userId) {
+      return res.status(401).json({ message: 'Utilisateur non authentifié.' });
+    }
 
     const newBook = new Book({
       userId,
@@ -84,11 +96,6 @@ exports.deleteBook = async (req, res) => {
       return res.status(404).json({ message: 'Livre non trouvé' });
     }
 
-    // const fs = require('fs');
-    // const path = require('path');
-    // const filename = bookToDelete.imageUrl.split('/images/')[1];
-    // fs.unlinkSync(path.join(__dirname, '../images', filename));
-
     await Book.findByIdAndDelete(bookId);
     return res.status(200).json({ message: 'Livre supprimé !' });
   } catch (err) {
@@ -133,3 +140,9 @@ exports.rateBook = async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 };
+
+exports.getTopThree = async (req, res) => {
+  const top = await Book.find().sort({ averageRating: -1 }).limit(3);
+  res.status(200).json(top);
+};
+

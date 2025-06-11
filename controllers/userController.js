@@ -1,5 +1,4 @@
 const User = require('../models/User');
-// const bcrypt = require('bcrypt');
 
 exports.createUser = async (req, res) => {
   console.log('Route POST /api/users atteinte !');
@@ -15,11 +14,9 @@ exports.createUser = async (req, res) => {
       return res.status(400).json({ message: 'Cet email existe déjà.' });
     }
 
-    // const hashedPassword = await bcrypt.hash(password, 12);
-
     const userToSave = new User({
       email,
-      password, // password: hashedPassword
+      password, 
     });
 
     const savedUser = await userToSave.save();
@@ -46,3 +43,4 @@ exports.getAllUsers = async (req, res) => {
     return res.status(500).json({ error: 'Erreur serveur.' });
   }
 };
+

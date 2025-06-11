@@ -12,10 +12,11 @@ const normalizePort = val => {
   }
   return false;
 };
-const port = normalizePort(process.env.PORT ||'3000');
-app.set('port', port);
 
-const errorHandler = error => {
+const port = normalizePort(process.env.PORT ||'4000');
+app.set('port', process.env.PORT ||'4000');
+
+ const errorHandler = error => {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -33,7 +34,7 @@ const errorHandler = error => {
     default:
       throw error;
   }
-};
+}; 
 
 const server = http.createServer(app);
 
