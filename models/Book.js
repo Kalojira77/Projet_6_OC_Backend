@@ -1,18 +1,16 @@
 const mongoose = require('mongoose');
 
-const ratingSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  grade: { type: Number, required: true }
-});
-
 const bookSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: String, required: true },
   title: { type: String, required: true },
   author: { type: String, required: true },
   imageUrl: { type: String, required: true },
   year: { type: Number, required: true },
   genre: { type: String, required: true },
-  ratings: [ratingSchema],
+  ratings: [{
+  userId: { type: String, required: true },
+  grade: { type: Number, required: true }
+}],
   averageRating: { type: Number, default: 0 }
 });
 

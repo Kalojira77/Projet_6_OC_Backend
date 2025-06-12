@@ -5,54 +5,46 @@ const Book = require('../models/Book');
 // =========================
 
 exports.createBook = async (req, res) => {
-  console.log('>>> [DEBUG] Requête reçue dans createBook');
+  try {
+
+      console.log('>>> [DEBUG] Requête reçue dans createBook');
   console.log('req.body:', req.body);
   console.log('req.file:', req.file);
 
-  try {
-    // ✅ Si "book" est une string JSON (ce qui est le cas), on la parse
     const parsedBook = JSON.parse(req.body.book);
 
-    const { title, author, year, genre, rating } = parsedBook;
-   /* const imageUrl = req.body.imageUrl; */
+    const { title, author, year, genre, ratings } = parsedBook;
 
-    if (!title || !author || /*!imageUrl ||*/ !year || !genre || !rating) {
+    if (!title || !author || !year || !genre || !ratings ){
       return res.status(400).json({
         message: 'Tous les champs (titre, auteur, image, année, genre, note) sont requis.'
       });
     }
 
-    const userId = req.auth?.userId || parsedBook.userId; // fallback si auth non utilisé
-
-    if (!userId) {
-      return res.status(401).json({ message: 'Utilisateur non authentifié.' });
-    }
-
-    const numericRating = Number(rating);
+    const numericRating = Number(parsedBook.averageRating);
     if (isNaN(numericRating) || numericRating < 0 || numericRating > 5) {
       return res.status(400).json({ message: 'Note invalide. Elle doit être entre 0 et 5.' });
     }
-
+    console.log(req.file.filename);
     const newBook = new Book({
-      userId,
-      title,
-      author,
-      imageUrl,
-      year,
-      genre,
-      ratings: [{ userId, grade: numericRating }],
-      averageRating: numericRating
+      ...parsedBook,
+      userId: req.auth.userId,
+      imageUrl: `${req.protocol}://${req.get("host")}/uploads/${
+                      req.file.filename
+                  }`,
     });
 
     const savedBook = await newBook.save();
-
+    if (!savedBook) {
+      return res.status(500).json({ message: 'Erreur lors de la création du livre.' });
+    }
     return res.status(201).json({
       message: 'Livre créé !',
       book: savedBook
     });
 
   } catch (err) {
-    console.error('❌ Erreur dans createBook:', err.message);
+    console.error(' Erreur dans createBook:', err.message);
     return res.status(400).json({ error: err.message });
   }
 };
@@ -147,10 +139,10 @@ exports.deleteBook = async (req, res) => {
 exports.rateBook = async (req, res) => {
   try {
     const bookId = req.params.id;
-    const { userId, grade } = req.body;
+    const { userId, rating } = req.body;
 
-    if (grade == null) {
-      return res.status(400).json({ message: 'Note (grade) requise.' });
+    if (rating < 0 || rating > 5) {
+      return res.status(400).json({ message: 'Note requise.' });
     }
 
     const book = await Book.findById(bookId);
@@ -159,20 +151,22 @@ exports.rateBook = async (req, res) => {
     }
 
     const alreadyRated = book.ratings.some(
-      (r) => r.userId.toString() === userId
+      (r) => r.userId.toString() === req.auth.userId
     );
     if (alreadyRated) {
       return res.status(400).json({ message: 'Vous avez déjà noté ce livre.' });
     }
 
-    book.ratings.push({ userId, grade });
+    book.ratings.push({ 'userId': req.auth.userId, 'grade': rating });
 
     const sum = book.ratings.reduce((acc, r) => acc + r.grade, 0);
+    console.log('Sum des notes:', sum);
     book.averageRating = Math.round((sum / book.ratings.length) * 10) / 10;
 
     await book.save();
     return res.status(201).json({
       message: 'Note ajoutée !',
+      /* ajouter le livre concerné */
       averageRating: book.averageRating
     });
 
