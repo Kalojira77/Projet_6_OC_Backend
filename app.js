@@ -10,6 +10,11 @@ const auth = require('./middleware/auth');
 
 /* Initialisation d'Express */
 const app = express();
+app.use((req, res, next) => {
+  console.log(`➡️ Requête Express : ${req.method} ${req.url}`);
+  next();
+});
+
 
 /* Connexion à la base de données */
 require('./utils/db');
@@ -30,7 +35,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 app.use('/api/auth', require('./routes/auth'));
