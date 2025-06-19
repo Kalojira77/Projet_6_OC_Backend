@@ -1,27 +1,52 @@
-/* Chargement des variables d'environnement */
+// app.js
+
 require('dotenv').config();
 
-/* Dépendances principales */
 const express = require('express');
 const path = require('path');
 
-/* Middleware d'authentification */
 const auth = require('./middleware/auth');
 
-/* Initialisation d'Express */
 const app = express();
 app.use((req, res, next) => {
-  console.log(`➡️ Requête Express : ${req.method} ${req.url}`);
+  console.log(`Requête Express : ${req.method} ${req.url}`);
   next();
 });
 
-
-/* Connexion à la base de données */
 require('./utils/db');
 
 app.use(express.json());
 
-// CORS
+const helmet = require('helmet');
+
+app.use(express.json());
+
+// 🛡️ Protection des headers HTTP
+app.use(helmet({
+  crossOriginResourcePolicy: false
+}));
+
+
+const rateLimit = require('express-rate-limit');
+
+// Limiteur global pour toutes les requêtes
+const globalLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // 100 requêtes max par IP
+  message: 'Trop de requêtes. Réessayez plus tard.',
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+app.use(globalLimiter);
+
+app.use((req, res, next) => {
+  if (req.rateLimit) {
+    console.log('🌐 Global rateLimit info :', req.rateLimit);
+  }
+  next();
+});
+
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(

@@ -8,9 +8,15 @@ const User   = require('../models/User');
 exports.signup = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email et mot de passe requis.' });
+    const validator = require('validator');
+
+    if (!email || !validator.isEmail(email)) {
+      return res.status(400).json({ message: 'Email invalide.' });
     }
+    if (!password || password.length < 8) {
+      return res.status(400).json({ message: 'Mot de passe trop court (min 8 caractères).' });
+    }
+
 
     const existing = await User.findOne({ email }); 
     if (existing) {

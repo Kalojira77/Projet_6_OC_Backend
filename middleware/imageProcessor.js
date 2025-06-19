@@ -1,32 +1,30 @@
 // middleware/imageProcessor.js
+
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
 module.exports = async (req, res, next) => {
-  if (!req.file) return next(); // Pas de fichier → continuer
-
+  if (!req.file) return next(); 
   try {
-    // Générer un nom unique, propre et lisible
+    // Générer un nom unique
     const getDateString = () => {
       const d = new Date();
-      return d.toISOString().slice(0, 10).replace(/-/g, ''); // ex : 20250619
+      return d.toISOString().slice(0, 10).replace(/-/g, ''); 
     };
 
-    const uniqueId = crypto.randomBytes(4).toString('hex'); // ex : 7f3a9c1e
+    const uniqueId = crypto.randomBytes(4).toString('hex'); 
     const filename = `cover_${getDateString()}_${uniqueId}.webp`;
 
-    // Chemin de destination dans le dossier uploads
     const outputPath = path.join(__dirname, '..', 'uploads', filename);
 
     // Traitement de l'image avec Sharp
     await sharp(req.file.buffer)
-      .resize(600) // largeur fixe
-      .webp({ quality: 80 }) // conversion en WebP
+      .resize(600) 
+      .webp({ quality: 80 }) 
       .toFile(outputPath);
 
-    // Injecter le nom du fichier pour le contrôleur
     req.file.filename = filename;
 
     next();

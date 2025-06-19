@@ -1,3 +1,41 @@
 > ⚠️ **Note**: The `uploads/` folder is included in this repository **only for demonstration purposes**.  
 It contains sample image files to allow proper display and testing during development.  
 **Do not include this folder in production environments** — it should be listed in `.gitignore`.
+
+
+# Mon Vieux Grimoire — API Backend
+
+Projet de formation OpenClassrooms - Développeur Web
+
+## 📦 Fonctionnalités
+
+- Authentification sécurisée (signup/login) avec JWT
+- API RESTful pour la gestion des livres
+- Upload et compression d'image (.webp)
+- Protection contre les attaques XSS, brute force et DDOS
+
+## 🔐 Sécurité
+
+- `bcrypt` pour le hachage de mot de passe
+- `helmet` pour sécuriser les headers HTTP
+- `express-rate-limit` pour limiter les tentatives (connexion & global)
+- `multer` + `sharp` pour filtrer, limiter et compresser les images
+- Authentification par token JWT sur toutes les routes `/api/books`
+
+## ⚙️ Stack
+
+- Node.js / Express
+- MongoDB / Mongoose
+- Multer / Sharp / Helmet
+
+## 🚀 Démarrage
+
+1. Cloner le repo
+2. Ajouter un fichier `.env` :
+MONGODB_URI=...
+JWT_SECRET=...
+PORT=....
+3. Lancer le serveur :
+```bash
+npm install
+npm start
