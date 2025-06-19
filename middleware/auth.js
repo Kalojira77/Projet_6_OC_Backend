@@ -9,7 +9,11 @@ module.exports = (req, res, next) => {
     if (!header) {
       return res.status(401).json({ message: 'Token manquant !' });
     }
-    const token = header.split(' ')[1];
+    const [type, token] = header.split(' ');
+    if (type !== 'Bearer' || !token) {
+    return res.status(401).json({ message: 'Format d\'autorisation invalide' });
+  }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.auth = { userId: decoded.userId };
     next();

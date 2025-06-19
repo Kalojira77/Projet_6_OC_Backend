@@ -1,3 +1,5 @@
+// routes/book.js
+
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
@@ -12,7 +14,7 @@ router.get('/:id', bookController.getBookById);
 
 // Routes protégées (nécessitent authentification)
 router.post('/', auth, multer, imageProcessor, bookController.createBook);
-router.put('/:id', auth, bookController.modifyBook);
+router.put('/:id', auth, multer, imageProcessor, bookController.modifyBook);
 router.delete('/:id', auth, bookController.deleteBook);
 router.post('/:id/rating', auth, bookController.rateBook);
 

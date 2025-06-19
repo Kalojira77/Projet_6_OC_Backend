@@ -1,0 +1,3 @@
+> ⚠️ **Note**: The `uploads/` folder is included in this repository **only for demonstration purposes**.  
+It contains sample image files to allow proper display and testing during development.  
+**Do not include this folder in production environments** — it should be listed in `.gitignore`.

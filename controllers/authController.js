@@ -1,3 +1,5 @@
+// controllers/authController.js
+
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt    = require('jsonwebtoken');
@@ -10,13 +12,11 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ message: 'Email et mot de passe requis.' });
     }
 
-    // Vérifier l’existence
-    const existing = await User.findOne({ email });
+    const existing = await User.findOne({ email }); 
     if (existing) {
-      return res.status(400).json({ message: 'Cet email existe déjà.' });
+      return res.status(400).json({ message: 'E-mail déjà utilisé.' });
     }
 
-    // Hachage du mot de passe
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = new User({
@@ -33,7 +33,6 @@ exports.signup = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  console.log('[LOGIN] req.body =', req.body);
   try {
     const { email, password } = req.body;
   if (!email || !password) {
