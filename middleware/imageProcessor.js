@@ -8,7 +8,6 @@ const crypto = require('crypto');
 module.exports = async (req, res, next) => {
   if (!req.file) return next(); 
   try {
-    // Générer un nom unique
     const getDateString = () => {
       const d = new Date();
       return d.toISOString().slice(0, 10).replace(/-/g, ''); 
@@ -19,9 +18,8 @@ module.exports = async (req, res, next) => {
 
     const outputPath = path.join(__dirname, '..', 'uploads', filename);
 
-    // Traitement de l'image avec Sharp
     await sharp(req.file.buffer)
-      .resize(600) 
+      .resize(340) 
       .webp({ quality: 80 }) 
       .toFile(outputPath);
 

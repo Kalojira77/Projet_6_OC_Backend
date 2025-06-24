@@ -14,13 +14,7 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ message: 'Email invalide.' });
     }
     if (!password || password.length < 8) {
-      return res.status(400).json({ message: 'Mot de passe trop court (min 8 caractères).' });
-    }
-
-
-    const existing = await User.findOne({ email }); 
-    if (existing) {
-      return res.status(400).json({ message: 'E-mail déjà utilisé.' });
+      return res.status(400).json({ message: 'Mot de passe trop court (min 8 caractères).' }); 
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -33,8 +27,13 @@ exports.signup = async (req, res) => {
 
     res.status(201).json({ message: 'Utilisateur créé !', userId: user._id });
   } catch (err) {
-    console.error('Erreur signup :', err);
-    res.status(500).json({ error: 'Erreur serveur.' });
+
+    if (err.code === 11000) {
+            return res.status(400).json({
+                error: "Cet email est déjà utilisé",
+            });
+        }
+        return res.status(400).json({ error: err.message });
   }
 };
 
@@ -47,12 +46,12 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ email });
    if (!user) {
-  return res.status(401).json({ error: 'Utilisateur non trouvé.' });
+  return res.status(401).json({ error: 'Email ou mot de passe incorrect.' });
 }
 
     const valid = await bcrypt.compare(password, user.password);
  if (!valid) {
-  return res.status(401).json({ error: 'Mot de passe incorrect.' });
+  return res.status(401).json({ error: 'Email ou mot de passe incorrect.' });
 }
     const token = jwt.sign(
       { userId: user._id },

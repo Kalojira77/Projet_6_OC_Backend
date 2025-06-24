@@ -1,5 +1,7 @@
 // app.js
 
+// moongose sanityse -> check les requêtes contre les injections de code "_"
+
 require('dotenv').config();
 
 const express = require('express');
@@ -19,8 +21,6 @@ app.use(express.json());
 
 const helmet = require('helmet');
 
-app.use(express.json());
-
 // 🛡️ Protection des headers HTTP
 app.use(helmet({
   crossOriginResourcePolicy: false
@@ -29,7 +29,6 @@ app.use(helmet({
 
 const rateLimit = require('express-rate-limit');
 
-// Limiteur global pour toutes les requêtes
 const globalLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 100, // 100 requêtes max par IP

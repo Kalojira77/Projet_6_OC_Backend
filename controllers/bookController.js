@@ -80,7 +80,7 @@ exports.getBookById = async (req, res) => {
 };
 
 // ======================
-// 🔹 Modifier un livre
+// 🔹 Modifier un livre // mieux si book supp avant image ?//
 // ======================
 exports.modifyBook = async (req, res) => {
   try {
@@ -97,7 +97,7 @@ exports.modifyBook = async (req, res) => {
     console.log('[DEBUG modifyBook] req.file:', req.file);
 
     if (req.file && req.file.filename) {
-      deleteImageFromUrl(book.imageUrl);
+      deleteImageFromUrl(book.imageUrl); 
 
       const parsedBook = JSON.parse(req.body.book);
       updatedData = {

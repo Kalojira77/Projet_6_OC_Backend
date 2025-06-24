@@ -5,7 +5,7 @@ const path = require('path');
 
 /**
  * Supprime une image du dossier /uploads à partir de son URL complète
- * @param {string} imageUrl - L'URL de l'image à supprimer
+ * @param {string} imageUrl 
  */
 const deleteImageFromUrl = (imageUrl) => {
   if (!imageUrl) return;
