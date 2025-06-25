@@ -138,7 +138,7 @@ exports.deleteBook = async (req, res) => {
 
     await Book.findByIdAndDelete(bookId);
 
-    return res.status(200).json({ message: 'Livre supprimé !' });
+    return res.status(204).json({ message: 'Livre supprimé !' }); 
   } catch (err) {
     console.log('Erreur suppression Book :', err);
     return res.status(400).json({ error: err.message });
